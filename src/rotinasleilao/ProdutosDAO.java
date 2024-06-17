@@ -1,30 +1,67 @@
 package rotinasleilao;
 
 import java.sql.PreparedStatement;
-import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-
 
 public class ProdutosDAO {
     
-    Connection conn;
-    PreparedStatement prep;
-    ResultSet resultset;
-    ArrayList<ProdutosDTO> listagem = new ArrayList<>();
-    
-    public void cadastrarProduto (ProdutosDTO produto){
+    public static boolean cadastrarProduto (ProdutosDTO produto) throws SQLException{
         
-         //conn = new conectaDAO().connectDB();
-        
+        try{
+            conectaDAO conexao = new conectaDAO();
+            conexao.conectar();
+
+            String sql = "insert into filmes(nome, valor, status) values (?,?,?);";
+            PreparedStatement consulta = conexao.getConexao().prepareStatement(sql);
+
+            consulta.setString(1, produto.getNome());
+            consulta.setInt(2, produto.getValor());
+            consulta.setString(3, produto.getStatus());
+
+            consulta.execute();
+
+            conexao.desconectar();
+            return true;
+            
+        }catch(SQLException sqle){
+            System.out.println("Falha ao cadastrar registro no Banco de Dados.");
+            return false;
+        }
     }
     
-    public ArrayList<ProdutosDTO> listarProdutos(){
+    public static ArrayList<ProdutosDTO> listarProdutos(){
+        
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+        
+        try{
+            conectaDAO conexao = new conectaDAO();
+            conexao.conectar();
+            
+            String sql = "SELECT * FROM produtos;";
+            PreparedStatement consulta = conexao.getConexao().prepareStatement(sql);
+            
+            ResultSet resposta = consulta.executeQuery();
+            
+            while(resposta.next()){
+                ProdutosDTO pdto = new ProdutosDTO();
+                
+                pdto.setId(resposta.getInt("id"));
+                pdto.setNome(resposta.getString("nome"));
+                pdto.setValor(resposta.getInt("valor"));
+                pdto.setStatus(resposta.getString("status"));
+                
+                listagem.add(pdto);
+            }
+            
+            conexao.desconectar();
+            
+        }catch (SQLException sqle){
+            System.out.println("Falha ao listar os produtos cadastrados!");
+        }
         
         return listagem;
     }
-    
-    
-    
         
 }
