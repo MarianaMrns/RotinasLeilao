@@ -133,8 +133,10 @@ public class cadastroVIEW extends javax.swing.JFrame {
         ProdutosDTO produto = new ProdutosDTO();
         
         try{
+            String status = "A venda";
             produto.setNome(cadastroNome.getText());
             produto.setValor(Integer.parseInt(cadastroValor.getText()));
+            produto.setStatus(status);
             
             if (ProdutosDAO.cadastrarProduto(produto)){
                 JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso!");
